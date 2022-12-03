@@ -1,11 +1,12 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const internal = require("stream");
 
 const app = express();
 
-/*
-GET /article~
-js로 리스트 다루기
+/* 계획
+  GET /article~
+  js로 리스트 다루기
 */
 
 app.use(bodyParser.json())
