@@ -15,8 +15,8 @@
 // }
 
 class Node {
-	constructor(data) {
-		this.data = data;
+	constructor(value) {
+		this.data = value;
 		this.next = null;
 	}
 }
@@ -31,6 +31,19 @@ class LinkedList {
 		this.numData = 0;
 	}
 	
+	// getter 본질은 함수와 같으나 외부에서 봤을 때는 Data property와 같다.
+	// getter와 setter는 Access property이다.
+	get	fullData() {
+		let	temp = this.head.next;
+		let str = '';
+
+		while (temp != null) {
+			str += `${temp.data}, `
+			temp = temp.next;
+		}
+		return (JSON.parse(`[${str.slice(0, -2)}]`));	
+	}
+
 	length() {
 		return (this.numData);
 	}
@@ -56,18 +69,24 @@ class LinkedList {
 		return (`[${str.slice(0, -2)}]`);
 	}
 
-// getter 본질은 함수와 같으나 외부에서 봤을 때는 Data property와 같다.
-// getter와 setter는 Access property이다.
-	get	fullData() {
-		let	temp = this.head;
-		let str = '';
+	printError() {
+		console.log("Error!");
+	}
 
-		temp = temp.next;
-		while (temp != null) {
-			str += `${temp.data}, `
+	insertData(data, idx) {
+		let	newNode = new Node(data);
+		let	temp = this.head.next;
+
+		if (idx > this.length() - 1)
+		{
+			this.printError();
+			return ;
+		}
+		for (let i = 0; i < idx - 1; ++i) {
 			temp = temp.next;
 		}
-		return (JSON.parse(`[${str.slice(0, -2)}]`));	
+		newNode.next = temp.next;
+		temp.next = newNode;
 	}
 }
 
@@ -77,4 +96,7 @@ l.append(2);
 l.append(3);
 l.append(4);
 l.append(5);
-console.log(l.fullData);
+l.insertData(42, 3)
+l.insertData(42, 1)
+// console.log(l.fullData);
+console.log(l.printAllData());
