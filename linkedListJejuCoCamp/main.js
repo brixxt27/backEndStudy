@@ -56,6 +56,8 @@ class LinkedList {
 		return (`[${str.slice(0, -2)}]`);
 	}
 
+// getter 본질은 함수와 같으나 외부에서 봤을 때는 Data property와 같다.
+// getter와 setter는 Access property이다.
 	get	fullData() {
 		let	temp = this.head;
 		let str = '';

@@ -13,5 +13,5 @@ let user = {
 
 user.fullName = "Jaesang Yoon";
 
-console.log(user.name);
+console.log(user.name)
 console.log(user.surname);
