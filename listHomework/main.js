@@ -24,7 +24,77 @@
 
 class Node {
   constructor(title, content) {
-    this.title = title;
+		this.idx = -1;
+		this.title = title;
 		this.content = content;
+		this.next = null;
   }
 }
+
+class LinkedList {
+	constructor() {
+		let	init = new Node('This is', 'dummy node');
+		this.head = init;
+		this.tail = init;
+		this.numData = 0;
+	}
+
+	getNumData() {
+		return (this.numData);
+	}
+
+	addArticle(title, content) {
+		let	tmp = new Node(title, content);
+
+		this.numData++;
+		tmp.idx++;
+		this.tail.next = tmp;
+		this.tail = tmp;
+	}
+
+	printError(str) {
+		let errStr = "Error\n";
+		errStr += str
+		console.log(errStr);
+	}
+
+	printAllTitle() {
+		let	tmp = this.head.next;
+		let	str = "";
+
+		if (this.getNumData() == 0) {
+			this.printError("List is empty!");
+			return ;
+		}
+		while (tmp != null) {
+			str += `${tmp.title}, `;
+			tmp = tmp.next;
+		}
+		console.log(str.slice(0, -2));
+	}
+
+	getArticle(idx) {
+		let	tmp = this.head.next;
+
+		if (this.getNumData() == 0) {
+			this.printError("List is empty!");
+			return ;
+		}
+		if (this.getNumData() - 1 < idx) {
+			this.printError("This idx is too big!");
+			return ;
+		}
+		while (tmp != null) {
+			if (tmp.idx == idx)
+				return (tmp);
+			tmp = tmp.next;
+		}
+	}
+}
+
+let	obj = new LinkedList();
+obj.addArticle("Jayoon", "1");
+obj.addArticle("Mosong", "2");
+obj.addArticle("m-min", "3")
+console.log(obj.getArticle(0));
+obj.printAllTitle();
