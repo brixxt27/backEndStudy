@@ -1,151 +1,74 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const internal = require("stream");
-
+const mysql = require("mysql");
+const query = require("./mysql"); // 기본적으로 먼저 파일명대로 탐색하고, 없다면 .js를 자동으로 붙여서 읽는다?
 const app = express();
 
-app.use(bodyParser.json())
+const addArticle = (data) => {};
 
-class Node {
-  constructor(title, content) {
-		this.idx;
-		this.title = title;
-		this.content = content;
-		this.next = null;
-  }
-}
+const getArticle = (index) => {};
 
-class LinkedList {
-	constructor() {
-		let	init = new Node('This is', 'dummy node');
+const getArticles = () => {};
 
-		this.idx = 0;
-		this.numData = 0;
-		this.head = init;
-		this.tail = init;
-	}
+app.use(bodyParser.json()); // body json을 parsing하기 편하게 하기위해 필요
 
-	getNumData() {
-		return (this.numData);
-	}
+// GET /article
+app.get("/article", async (_, res) => {
+  // const Articles = getArticles();
+  const sql = "SELECT * FROM article";
+  const result = await query(sql);
+  console.log(result[0]);
 
-	addArticle(title, content) {
-		let	tmp = new Node(title, content);
+  return res.status(200).json({ articles: 1 });
+});
 
-		this.numData++;
-		tmp.idx = this.idx;
-		this.idx++;
-		this.tail.next = tmp;
-		this.tail = tmp;
-	}
+// POST /article
+app.post("/article", async (req, res) => {
+  const { title, content } = req.body;
 
-	getArticle(idx) {
-		let	tmp = this.head.next;
-		let	numData = this.getNumData();
+  const _query = "INSERT INTO article (title, content) VALUES (?, ?)";
+  const sql = mysql.format(_query, [title, content]);
+  const result = await query(sql);
 
-		if (numData == 0) {
-			this.printError("List is empty!");
-			return ;
-		}
-		if (numData - 1 < idx || idx < 0) {
-			this.printError("Index is not valid!");
-			return ;
-		}
-		while (tmp != null) {
-			if (tmp.idx == idx)
-				return (tmp);
-			tmp = tmp.next;
-		}
-	}
-
-	getArticles() {
-		let	firstData = this.head.next;
-		let	numData = this.getNumData();
-
-		if (numData == 0) {
-			this.printError("List is empty!");
-			return ;
-		}
-		return (firstData);
-	}
-
-	printError(str) {
-		let errStr = "Error\n";
-		errStr += str
-		console.log(errStr);
-	}
-
-	printAllTitles() {
-		let	tmp = this.head.next;
-		let	str = "";
-
-		if (this.getNumData() == 0) {
-			this.printError("List is empty!");
-			return ;
-		}
-		while (tmp != null) {
-			str += `${tmp.title}, `;
-			tmp = tmp.next;
-		}
-		console.log(`[${str.slice(0, -2)}]`);
-	}
-
-	printAllContents() {
-		let	tmp = this.head.next;
-		let	str = "";
-
-		if (this.getNumData() == 0) {
-			this.printError("List is empty!");
-			return ;
-		}
-		while (tmp != null) {
-			str += `${tmp.content}, `;
-			tmp = tmp.next;
-		}
-		console.log(`[${str.slice(0, -2)}]`);
-	}
-}
-
-app.get("/article/:id", (req, res) => {
-  const id = req.params.id;
-
-  console.log(id);
-  return res.status(200).json({
-    post: "get /article:id",
-  })
-})
-
-let g_obj = new LinkedList();
-
-app.post("/article", (req, res) => {
-  const title = req.body.title;
-  const content = req.body.content;
-
-  if (title == '' || content == '')
+  if (!title.length) {
     return res.status(400).json({
-      error: "빈 문자열입니다"
-  })
+      error: "빈 문자열입니다",
+    });
+  }
+  addArticle({ title, content });
   return res.status(200).json({
-    g_obj.addArticle(title, content);
-  })
-})
+    title,
+    content,
+  });
+});
 
-app.get("/article", (req, res) => {
-  console.log("get article");
+// GET /article/:id
+app.get("/article/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+  const result = getArticle(id);
 
-  return res.status(200).json({
-    post: "get article",
-  })
-})
+  const query = "SELECT * FROM article WHERE idx = ?";
+  const sql = mysql.format(query, [id]);
+  const q_result = await query(sql);
 
-app.get("/helloworld", (req, res) => {
-  console.log("Hello world!");
-
-  return res.status(200).json({
-    message: "hello world",
-  })
-})
+  if (id < 0) {
+    return res.status(400).json({
+      error: "id가 음수입니다",
+    });
+  } else if (!id) {
+    return res.status(400).json({
+      message: "숫자가 아닌 값이 id로 전달됐습니다.",
+    });
+  } else if (id >= ) {
+    return res.status(404).json({
+      message: "요청한 id의 데이터가 없습니다.",
+    });
+  }
+  if (Array.isArray(result) && result.length) {
+    return res.status(200).json(result);
+  }
+});
 
 app.listen(8080, () => {
   console.log("server start");
-})
+});
